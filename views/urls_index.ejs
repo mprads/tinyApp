@@ -2,12 +2,13 @@
   <html lang=eng>
   <head>
     <title>TINY APP</title>>
-    <header> <%- include('partials/_header') %> </header>
   </head>
+  <%- include('partials/_header') %>
   <body>
-    <ul> <% for(var link in urls) { %>
-      <li> <%= urls[link] %> </li>
-      <%= link %>
+
+    <ul>  <% for(var link in urls) { %>
+      <li> Original URL: <%= urls[link] %>
+      <p> Tiny URL: <%= link %> </p> </li>
       <%} %>
     </ul>
     <p> Insert link to shortener here </p>>
