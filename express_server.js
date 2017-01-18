@@ -3,6 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 
+app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/urls/new', (request, response) => {
@@ -11,8 +12,19 @@ app.get('/urls/new', (request, response) => {
 
 app.post('/urls', (request, response) => {
   let rando = randomNumber();
-  urlDatabase[rando] = request.body.longURL;
+  if (!request.body.longURL){
+   response.redirect('http://localhost:8080/urls/new');
+   return;
+ }
+  for (let k in urlDatabase) {
+    if (urlDatabase[k] == request.body.longURL) {
+      response.redirect(`http://localhost:8080/urls/${k}`);
+      return;
+    }
+  }
+  urlDatabase[rando] = request.body.longURL
   response.redirect(`http://localhost:8080/urls/${rando}`);
+
   console.log(urlDatabase);
 });
 
@@ -51,7 +63,7 @@ const urlDatabase = {
 };
 
 app.get('/', (request, response) => {
-  response.end('Hello and welcome to TINY URL \n THE PLACE TO FIT ALL YOUR SHORTENING NEEDS');
+  response.end('Hello and Welcome to TINY URL \n The Place For All Your Shortening Needs');
 });
 
 app.get('/urls.json', (request, response) => {
@@ -68,5 +80,5 @@ app.listen(PORT, () => {
 });
 
 const randomNumber = () => {
-  return Math.floor(Math.random()* 1e10).toString(32);
+  return Math.floor(Math.random()* 1e9).toString(32);
 };
