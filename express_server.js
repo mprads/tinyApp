@@ -17,8 +17,8 @@ app.post('/urls', (request, response) => {
 });
 
 app.get('/u/:shortURL', (request, response) => {
-  let longURL =
-  resquest.redirect(longURL);
+  let longURL = urlDatabase[request.params.shortURL];
+  response.redirect(longURL);
 });
 
 app.get('/urls/:id', (request, response) => {
