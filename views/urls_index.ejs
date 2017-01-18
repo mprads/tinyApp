@@ -7,7 +7,7 @@
   <body>
 
     <ul>  <% for(var link in urls) { %>
-      <li> Original URL: <%= urls[link] %>
+      <li> Original URL: <%= urls[link] %> <a href='/urls/<%=link%>'> <button>EDIT</button> </a>
       <p> Tiny URL: <%= link %>
          <form method="POST" action='/urls/<%=link%>/delete'><button>DELETE</button></form>
       </p> </li>

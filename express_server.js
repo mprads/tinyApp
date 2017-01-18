@@ -21,6 +21,11 @@ app.post('/urls/:id/delete', (request, response) => {
   response.redirect('http://localhost:8080/urls');
 });
 
+app.post('/urls/:id/update', (request, response) => {
+  urlDatabase[request.params.id] = request.body.longURL;
+  response.redirect('http://localhost:8080/urls');
+});
+
 app.get('/u/:shortURL', (request, response) => {
   let longURL = urlDatabase[request.params.shortURL];
   response.redirect(longURL);
@@ -46,7 +51,7 @@ const urlDatabase = {
 };
 
 app.get('/', (request, response) => {
-  response.end('Hello!');
+  response.end('Hello and welcome to TINY URL \n THE PLACE TO FIT ALL YOUR SHORTENING NEEDS');
 });
 
 app.get('/urls.json', (request, response) => {

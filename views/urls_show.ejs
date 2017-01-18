@@ -5,7 +5,12 @@
   </head>
   <%- include('partials/_header') %>
   <body>
-    <p> Original URL: <%= LongURL%>  </p>
-    <p> Tiny URL: <%= shortURL%></p>
+    <form action="/urls/<%=shortURL%>/update" method="POST" style="margin:150px;">
+      <label for="longURL">Change the Original URL:</label>
+      <input id="longURL" type="text" name="longURL" placeholder="<%= LongURL%>" style="width: 300px">
+      <button>UPDATE</button>
+      <p> Tiny URL: <%= shortURL%></p>
+    </form>
   </body>>
   </html>
+
