@@ -16,6 +16,11 @@ app.post('/urls', (request, response) => {
   console.log(urlDatabase);
 });
 
+app.post('/urls/:id/delete', (request, response) => {
+  delete urlDatabase[request.params.id];
+  response.redirect('http://localhost:8080/urls');
+});
+
 app.get('/u/:shortURL', (request, response) => {
   let longURL = urlDatabase[request.params.shortURL];
   response.redirect(longURL);

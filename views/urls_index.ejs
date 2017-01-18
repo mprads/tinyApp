@@ -8,7 +8,9 @@
 
     <ul>  <% for(var link in urls) { %>
       <li> Original URL: <%= urls[link] %>
-      <p> Tiny URL: <%= link %> </p> </li>
+      <p> Tiny URL: <%= link %>
+         <form method="POST" action='/urls/<%=link%>/delete'><button>DELETE</button></form>
+      </p> </li>
       <%} %>
     </ul>
     <p> Insert link to shortener here </p>>
