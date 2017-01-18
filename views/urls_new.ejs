@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head></head>
-  <body style="font-size:20px; padding:50px;">
-    <% include partials/_header %>
-    <form action="/urls" method="POST" style="margin:150px;">
-      <label for="longURL">Enter a URL:</label>
+<html lang='eng'>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/public/style.css">
+    <script src="https://use.fontawesome.com/24a4399a18.js"></script>
+    <title>TINY APP</title>
+  </head>
+  <% include partials/_header %>
+  <body style='font-size:20px; padding:50px;''>
+    <form action='/urls' method='POST' style='margin:150px;''>
+      <h2><label for="longURL">Enter a URL:</label></h2>
       <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Submit">
     </form>
+    <h3>Return to database</h3>
+     <form method="GET" action='/urls'> <button>Return</button> </form>
   </body>
 </html>

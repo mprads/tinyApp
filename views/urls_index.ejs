@@ -1,18 +1,21 @@
 <!DOCTYPE HTML>
-  <html lang=eng>
+  <html lang='eng'>
   <head>
-    <title>TINY APP</title>>
+    <script src="https://use.fontawesome.com/24a4399a18.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>TINY APP</title>
   </head>
   <%- include('partials/_header') %>
   <body>
 
     <ul>  <% for(var link in urls) { %>
-      <li> Original URL: <%= urls[link] %> <a href='/urls/<%=link%>'> <button>EDIT</button> </a>
-      <p> Tiny URL: <%= link %>
-         <form method="POST" action='/urls/<%=link%>/delete'><button>DELETE</button></form>
-      </p> </li>
+      <li><h2> Original URL:<a href="<%= urls[link] %>"><%= urls[link] %></a></h2><a href='/urls/<%=link%>'> <button>EDIT</button> </a>
+      <h2> Tiny URL: <%= link %>
+         <form method="POST" action='/urls/<%=link%>/delete'><button><i class="fa fa-trash-o" aria-hidden="true"></button></i></form>
+      </h2> </li>
       <%} %>
     </ul>
-    <p> Insert link to shortener here </p>>
-  </body>>
+    <h3>Add new URL</h3>
+    <form method="GET" action='/urls/new'> <button>New</button> </form>
+  </body>
   </html>
