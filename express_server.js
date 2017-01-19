@@ -3,6 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const users = {};
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -10,12 +11,25 @@ app.use(cookieParser());
 
 app.post('/login', (request, response) => {
   response.cookie('username', request.body.username);
-  response.redirect('http://localhost:8080/urls');
+  response.redirect('/urls');
 });
 
 app.post('/logout', (request, response) => {
   response.clearCookie('username')
-  response.redirect('http://localhost:8080/');
+  response.redirect('/');
+});
+
+app.post('/register', (request, response) => {
+  let randomId = randomNumber();
+  users[randomId] = {Id: [randomId], email: request.body['email'], password: request.body['password']}
+  response.cookie('user_id', randomId);
+  response.redirect('/')
+});
+
+
+app.get('/register', (request, response) => {
+  let templateVars = { username: request.cookies['username']};
+  response.render('register',templateVars);
 });
 
 app.get('/urls/new', (request, response) => {
@@ -26,29 +40,29 @@ app.get('/urls/new', (request, response) => {
 app.post('/urls', (request, response) => {
   let rando = randomNumber();
   if (!request.body.longURL){
-   response.redirect('http://localhost:8080/urls/new');
+   response.redirect('/urls/new');
    return;
  }
   for (let k in urlDatabase) {
     if (urlDatabase[k] == request.body.longURL) {
-      response.redirect(`http://localhost:8080/urls/${k}`);
+      response.redirect(`/urls/${k}`);
       return;
     }
   }
   urlDatabase[rando] = request.body.longURL
-  response.redirect(`http://localhost:8080/urls/${rando}`);
+  response.redirect(`/urls/${rando}`);
 
   console.log(urlDatabase);
 });
 
 app.post('/urls/:id/delete', (request, response) => {
   delete urlDatabase[request.params.id];
-  response.redirect('http://localhost:8080/urls');
+  response.redirect('/urls');
 });
 
 app.post('/urls/:id/update', (request, response) => {
   urlDatabase[request.params.id] = request.body.longURL;
-  response.redirect('http://localhost:8080/urls');
+  response.redirect('/urls');
 });
 
 app.get('/u/:shortURL', (request, response) => {
@@ -79,6 +93,9 @@ app.get('/', (request, response) => {
   response.end('Hello and Welcome to TINY URL \n The Place For All Your Shortening Needs');
 });
 
+app.get('/users.json', (request, response) => {
+  response.json(users);
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

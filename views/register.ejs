@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+  <html lang='eng'>
+  <head>
+    <script src="https://use.fontawesome.com/24a4399a18.js"></script>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <title>TINY APP</title>
+  </head>
+  <%- include('partials/_header') %>
+  <body>
+    <form action='/register' method='POST' style='margin:150px;''>
+      <h2><label for='email'>Email:</label></h2>
+      <input id='email' type='text' name='email' placeholder='example@example.example' style='width: 300px'>
+      <h2><label for='password'>Password:</label></h2>
+      <input id='password' type='text' name='password' placeholder='Password' style='width: 300px'>
+      <button>Register</button>
+    </form>
+    <h3>Return to Home</h3>
+     <form method='GET' action='/'> <button>Return</button> </form>
+  </body>
+  </html>
+
