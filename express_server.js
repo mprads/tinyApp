@@ -9,37 +9,67 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+app.get('/login', (request, response) => {
+ let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email']};
+  response.render('login',templateVars);
+});
+
 app.post('/login', (request, response) => {
-  response.cookie('username', request.body.username);
-  response.redirect('/urls');
+  for (let i in users) {
+    if ( request.body['email'] === users[i].email) {
+      if ( request.body['password']=== users[i].password) {
+        response.cookie('user_id', users[i].id);
+        response.redirect('/');
+        return;
+      } else {
+        response.send('Error: 403 \nIncorrect Email or Password');
+      return;
+      }
+    } else {
+      response.send('Error: 403 \nIncorrect Email or Password');
+      return;
+    }
+  }
 });
 
 app.post('/logout', (request, response) => {
-  response.clearCookie('username')
+  response.clearCookie('user_id')
   response.redirect('/');
 });
 
 app.post('/register', (request, response) => {
+  for (let i in users) {
+    if (users[i].email === request.body['email']) {
+      response.statusCode = 400;
+      response.send('Error: 400 \nEmail already exists');
+      return;
+    }
+  }
+  if (!request.body['email'] || !request.body['password']) {
+    response.statusCode = 400;
+    response.send('Error: 400 \nPlease confirm you entered both fields properly');
+    return;
+  }
   let randomId = randomNumber();
-  users[randomId] = {Id: [randomId], email: request.body['email'], password: request.body['password']}
+  users[randomId] = {id: [randomId], email: request.body['email'], password: request.body['password']}
   response.cookie('user_id', randomId);
   response.redirect('/')
 });
 
 
 app.get('/register', (request, response) => {
-  let templateVars = { username: request.cookies['username']};
+  let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email']};
   response.render('register',templateVars);
 });
 
 app.get('/urls/new', (request, response) => {
-  let templateVars = { username: request.cookies['username']};
+  let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email']};
   response.render('urls_new',templateVars);
 });
 
 app.post('/urls', (request, response) => {
   let rando = randomNumber();
-  if (!request.body.longURL){
+  if (!request.body.longURL) {
    response.redirect('/urls/new');
    return;
  }
@@ -71,16 +101,15 @@ app.get('/u/:shortURL', (request, response) => {
 });
 
 app.get('/urls/:id', (request, response) => {
-  let templateVars = { username: request.cookies['username'], shortURL: request.params.id };
+  let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email'], shortURL: request.params.id };
   templateVars.longURL = urlDatabase[request.params.id] || 'Not in database';
   response.render("urls_show", templateVars);
 });
 
 app.get('/urls', (request, response) =>{
-  let templateVars = {username: request.cookies['username'], urls: urlDatabase};
+  let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email'], urls: urlDatabase};
   response.render('urls_index', templateVars);
 });
-
 
 app.set('view engine', 'ejs');
 
@@ -90,7 +119,8 @@ const urlDatabase = {
 };
 
 app.get('/', (request, response) => {
-  response.end('Hello and Welcome to TINY URL \n The Place For All Your Shortening Needs');
+  response.redirect('/urls')
+  // response.end('Hello and Welcome to TINY URL \n The Place For All Your Shortening Needs');
 });
 
 app.get('/users.json', (request, response) => {
