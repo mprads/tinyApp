@@ -100,7 +100,7 @@ app.get('/u/:shortURL', (request, response) => {
 
 app.get('/urls/:id', (request, response) => {
   let email = (request.cookies["user_id"]) ? users[request.cookies["user_id"]].email : "";
-  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase, shortURL: request.params.id};
   templateVars.longURL = urlDatabase[request.params.id] || 'Not in database';
   response.render("urls_show", templateVars);
 });
