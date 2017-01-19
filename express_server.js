@@ -20,7 +20,7 @@ app.post('/logout', (request, response) => {
 
 app.get('/urls/new', (request, response) => {
   let templateVars = { username: request.cookies['username']};
-  response.render('urls_new');
+  response.render('urls_new',templateVars);
 });
 
 app.post('/urls', (request, response) => {
