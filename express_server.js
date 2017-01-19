@@ -10,14 +10,15 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 app.get('/login', (request, response) => {
- let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email']};
+  let email = (request.cookies["user_id"]) ? users[request.cookies["user_id"]].email : "";
+  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   response.render('login',templateVars);
 });
 
 app.post('/login', (request, response) => {
   for (let i in users) {
     if ( request.body['email'] === users[i].email) {
-      if ( request.body['password']=== users[i].password) {
+      if ( request.body['password'] === users[i].password) {
         response.cookie('user_id', users[i].id);
         response.redirect('/');
         return;
@@ -25,9 +26,6 @@ app.post('/login', (request, response) => {
         response.send('Error: 403 \nIncorrect Email or Password');
       return;
       }
-    } else {
-      response.send('Error: 403 \nIncorrect Email or Password');
-      return;
     }
   }
 });
@@ -51,19 +49,21 @@ app.post('/register', (request, response) => {
     return;
   }
   let randomId = randomNumber();
-  users[randomId] = {id: [randomId], email: request.body['email'], password: request.body['password']}
+  users[randomId] = {id: randomId, email: request.body['email'], password: request.body['password']}
   response.cookie('user_id', randomId);
   response.redirect('/')
 });
 
 
 app.get('/register', (request, response) => {
-  let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email']};
-  response.render('register',templateVars);
+  let email = (request.cookies["user_id"]) ? users[request.cookies["user_id"]].email : "";
+  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  response.render('register', templateVars);
 });
 
 app.get('/urls/new', (request, response) => {
-  let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email']};
+  let email = (request.cookies["user_id"]) ? users[request.cookies["user_id"]].email : "";
+  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   response.render('urls_new',templateVars);
 });
 
@@ -81,8 +81,6 @@ app.post('/urls', (request, response) => {
   }
   urlDatabase[rando] = request.body.longURL
   response.redirect(`/urls/${rando}`);
-
-  console.log(urlDatabase);
 });
 
 app.post('/urls/:id/delete', (request, response) => {
@@ -101,13 +99,15 @@ app.get('/u/:shortURL', (request, response) => {
 });
 
 app.get('/urls/:id', (request, response) => {
-  let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email'], shortURL: request.params.id };
+  let email = (request.cookies["user_id"]) ? users[request.cookies["user_id"]].email : "";
+  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   templateVars.longURL = urlDatabase[request.params.id] || 'Not in database';
   response.render("urls_show", templateVars);
 });
 
-app.get('/urls', (request, response) =>{
-  let templateVars = {id: request.cookies['id'], username: request.cookies['username'], email: request.cookies['email'], urls: urlDatabase};
+app.get('/urls', (request, response) => {
+  let email = (request.cookies["user_id"]) ? users[request.cookies["user_id"]].email : "";
+  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   response.render('urls_index', templateVars);
 });
 
@@ -120,7 +120,6 @@ const urlDatabase = {
 
 app.get('/', (request, response) => {
   response.redirect('/urls')
-  // response.end('Hello and Welcome to TINY URL \n The Place For All Your Shortening Needs');
 });
 
 app.get('/users.json', (request, response) => {
