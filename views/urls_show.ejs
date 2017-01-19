@@ -2,14 +2,14 @@
   <html lang='eng'>
   <head>
     <script src="https://use.fontawesome.com/24a4399a18.js"></script>
-    <link rel="stylesheet" type="text/css" href="/public/style.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
     <title>TINY APP</title>
   </head>
   <%- include('partials/_header') %>
   <body>
     <form action='/urls/<%=shortURL%>/update' method='POST' style='margin:150px;''>
       <h2><label for='longURL'>Change the Original URL:</label></h2>
-      <input id='longURL' type='text' name='longURL' placeholder='<%= LongURL%>' style='width: 300px'>
+      <input id='longURL' type='text' name='longURL' placeholder='<%= longURL%>' style='width: 300px'>
       <button>UPDATE</button>
       <h2> Tiny URL: <%= shortURL%></h2>
     </form>
