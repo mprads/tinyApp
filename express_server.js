@@ -2,11 +2,11 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const users = {};
 // { ran123: {id: 'ran123', email: 'test1', password: 'p'},
 //  dom345: {id: 'dom456', email: 'test1', password: 'p'}
-
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -20,7 +20,7 @@ app.get('/login', (request, response) => {
 app.post('/login', (request, response) => {
   for (let i in users) {
     if ( request.body['email'] === users[i].email) {
-      if ( request.body['password'] === users[i].password) {
+      if ( bcrypt.compareSync(request.body['password'], users[i].password)) {
         response.cookie('user_id', users[i].id);
         response.redirect('/');
         return;
@@ -50,8 +50,10 @@ app.post('/register', (request, response) => {
     response.send('Error: 400 \nPlease confirm you entered both fields properly');
     return;
   }
+  const password = request.body['password']; // you will probably this from req.params
+  const hashed_password = bcrypt.hashSync(password, 10);
   let randomId = randomNumber();
-  users[randomId] = {id: randomId, email: request.body['email'], password: request.body['password']}
+  users[randomId] = {id: randomId, email: request.body['email'], password: hashed_password};
   response.cookie('user_id', randomId);
   response.redirect('/')
 });
