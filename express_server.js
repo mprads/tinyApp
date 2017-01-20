@@ -89,12 +89,6 @@ let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
   if (!request.body.longURL) {
    response.redirect('/urls/new');
    return;
- }
-  for (let k in urlDatabase) {
-    if (urlDatabase[k].longURL == request.body.longURL) {
-      response.redirect(`/urls/${k}`);
-      return;
-    }
   }
   urlDatabase[rando] = {longURL: request.body.longURL, createdBy: request.session['user_id']};
   console.log(urlDatabase);

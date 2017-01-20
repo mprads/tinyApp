@@ -2,10 +2,10 @@
   <script src="https://use.fontawesome.com/24a4399a18.js"></script>
 <h1> TINY URL </h1>
 <%if (!email){%>
-<form action="/login" method="GET" style="margin:150px;"><button>Log In</button></form>
-<form action="/register" method="GET" style="margin:150px;"><button>Register</button></form>
+<form action="/login" method="GET"><button>Log In</button></form>
+<form action="/register" method="GET"><button>Register</button></form>
 <% } else { %>
 <h3>Logged in as:</h3> <%= email%>
-<form action="/logout" method="POST" style="margin:150px;"><button>Logout</button></form>
+<form action="/logout" method="POST"><button>Logout</button></form>
 <% } %>
 
