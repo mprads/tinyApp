@@ -3,44 +3,44 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const cookieParser = require('cookie-parser');
-const users = {
-  ran123: {
-    id: 'ran123',
-    email: 'test1',
-    password: 'p'},
-  dom345: {
-    id: 'dom456',
-    email: 'test1',
-    password: 'p'}
-};
+const cookieSession = require('cookie-session');
+const users = {};
+
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['secret'],
+  maxAge: 24 * 60 * 60 * 1000
+  }));
 
 app.get('/login', (request, response) => {
-  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
-  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
+  let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
   response.render('login',templateVars);
 });
 
 app.post('/login', (request, response) => {
   for (let i in users) {
-    if ( request.body['email'] === users[i].email) {
+    console.log(i);
+    if (request.body['email'] === users[i].email) {
+      console.log(i);
       if ( bcrypt.compareSync(request.body['password'], users[i].password)) {
-        response.cookie('user_id', users[i].id);
+        console.log(i)
+        request.session.user_id = users[i].id;
         response.redirect('/');
         return;
       } else {
         response.send('Error: 403 \nIncorrect Email or Password');
-      return;
+        return;
       }
     }
   }
+  response.send('Error: 403 \nIncorrect Email or Password');
 });
 
 app.post('/logout', (request, response) => {
-  response.clearCookie('user_id')
+  request.session.user_id = null;
   response.redirect('/');
 });
 
@@ -61,26 +61,26 @@ app.post('/register', (request, response) => {
   const hashed_password = bcrypt.hashSync(password, 10);
   let randomId = randomNumber();
   users[randomId] = {id: randomId, email: request.body['email'], password: hashed_password};
-  response.cookie('user_id', randomId);
+  request.session.user_id = randomId;
   response.redirect('/')
 });
 
 
 app.get('/register', (request, response) => {
-  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
-  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
+  let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
   response.render('register', templateVars);
 });
 
 app.get('/urls/new', (request, response) => {
-  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
-  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
+  let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
   response.render('urls_new',templateVars);
 });
 
 app.post('/urls', (request, response) => {
-let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
-let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
+let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
   if (!email) {
     response.redirect('/login');
     return;
@@ -96,14 +96,14 @@ let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
       return;
     }
   }
-  urlDatabase[rando] = {longURL: request.body.longURL, createdBy: request.cookies['user_id']};
+  urlDatabase[rando] = {longURL: request.body.longURL, createdBy: request.session['user_id']};
   console.log(urlDatabase);
   response.redirect(`/urls/${rando}`);
 });
 
 app.post('/urls/:id/delete', (request, response) => {
-  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
-  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
+  let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
   if (!email) {
     response.redirect('/login');
     return;
@@ -113,8 +113,8 @@ app.post('/urls/:id/delete', (request, response) => {
 });
 
 app.post('/urls/:id/update', (request, response) => {
-  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
-  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
+  let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
   if (!email) {
     response.redirect('/login');
     return;
@@ -129,8 +129,8 @@ app.get('/u/:shortURL', (request, response) => {
 });
 
 app.get('/urls/:id', (request, response) => {
-  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
-  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase, shortURL: request.params.id};
+  let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
+  let templateVars = {id: request.session['id'], email: email, urls: urlDatabase, shortURL: request.params.id};
   templateVars.longURL = urlDatabase[request.params.id].longURL || 'Not in database';
   response.render('urls_show', templateVars);
 });
@@ -138,7 +138,7 @@ app.get('/urls/:id', (request, response) => {
 function filter(database,request) {
   let output = {}
   for (let link in urlDatabase) {
-    if (urlDatabase[link].createdBy === request.cookies['user_id']){
+    if (urlDatabase[link].createdBy === request.session['user_id']){
       output[link] = urlDatabase[link];
     }
   }
@@ -147,8 +147,8 @@ function filter(database,request) {
 
 app.get('/urls', (request, response) => {
   let url = filter(urlDatabase, request);
-  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
-  let templateVars = {id: request.cookies['id'], email: email, urls: url};
+  let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
+  let templateVars = {id: request.session['id'], email: email, urls: url};
   response.render('urls_index', templateVars);
 });
 
