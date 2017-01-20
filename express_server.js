@@ -3,8 +3,9 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const users = { ran123: {id: 'ran123', email: 'test1', password: 'p'},
- dom345: {id: 'dom456', email: 'test1', password: 'p'}};
+const users = {};
+// { ran123: {id: 'ran123', email: 'test1', password: 'p'},
+//  dom345: {id: 'dom456', email: 'test1', password: 'p'}
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -69,23 +70,35 @@ app.get('/urls/new', (request, response) => {
 });
 
 app.post('/urls', (request, response) => {
+let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  if (!email) {
+    response.redirect('/login');
+    return;
+  }
   let rando = randomNumber();
   if (!request.body.longURL) {
    response.redirect('/urls/new');
    return;
  }
-  for (let k in urlDatabase[request.cookies['user_id']]) {
-    if (urlDatabase[k] == request.body.longURL) {
+  for (let k in urlDatabase) {
+    if (urlDatabase[k].longURL == request.body.longURL) {
       response.redirect(`/urls/${k}`);
       return;
     }
   }
-  urlDatabase[rando] = {longURL: 'request.body.longURL', createdBy: request.cookies['user_id']};
+  urlDatabase[rando] = {longURL: request.body.longURL, createdBy: request.cookies['user_id']};
   console.log(urlDatabase);
   response.redirect(`/urls/${rando}`);
 });
 
 app.post('/urls/:id/delete', (request, response) => {
+  let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+  let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  if (!email) {
+    response.redirect('/login');
+    return;
+  };
   delete urlDatabase[request.params.id];
   response.redirect('/urls');
 });
@@ -93,19 +106,23 @@ app.post('/urls/:id/delete', (request, response) => {
 app.post('/urls/:id/update', (request, response) => {
   let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
+  if (!email) {
+    response.redirect('/login');
+    return;
+  };
   urlDatabase[request.params.id] = request.body.longURL;
   response.redirect('/urls');
 });
 
 app.get('/u/:shortURL', (request, response) => {
-  let longURL = urlDatabase[request.params.shortURL];
+  let longURL = urlDatabase[request.params.shortURL].longURL;
   response.redirect(longURL);
 });
 
 app.get('/urls/:id', (request, response) => {
   let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase, shortURL: request.params.id};
-  templateVars.longURL = urlDatabase[request.params.id] || 'Not in database';
+  templateVars.longURL = urlDatabase[request.params.id].longURL || 'Not in database';
   response.render('urls_show', templateVars);
 });
 

@@ -11,7 +11,7 @@
       <h2><label for='longURL'>Change the Original URL:</label></h2>
       <input id='longURL' type='text' name='longURL' placeholder='<%= longURL%>' style='width: 300px'>
       <button>UPDATE</button>
-      <h2> Tiny URL: <%= shortURL%></h2>
+      <h2> Tiny URL: <a href='/u/<%= shortURL%>'> <%= shortURL%></h2></a>
     </form>
     <h3>Return to database</h3>
      <form method='GET' action='/urls'> <button>Return</button> </form>
