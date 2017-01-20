@@ -8,8 +8,8 @@
   <%- include('partials/_header') %>
   <body>
 
-    <ul>  <% for(var link in urls) { %>
-      <li><h2> Original URL:<a href="<%= urls[link] %>"><%= urls[link] %></a></h2><a href='/urls/<%=link%>'> <button>EDIT</button> </a>
+    <ul>  <% for(let link in urls) { %>
+      <li><h2> Original URL:<a href='<%= urls[link].longURL %>''><%= urls[link].longURL %></a></h2><a href='/urls/<%=link%>'> <button>Edit</button> </a>
       <h2> Tiny URL: <%= link %>
          <form method="POST" action='/urls/<%=link%>/delete'><button><i class="fa fa-trash-o" aria-hidden="true"></button></i></form>
       </h2> </li>
