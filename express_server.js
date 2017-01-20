@@ -4,15 +4,22 @@ const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
-const users = {};
-// { ran123: {id: 'ran123', email: 'test1', password: 'p'},
-//  dom345: {id: 'dom456', email: 'test1', password: 'p'}
+const users = {
+  ran123: {
+    id: 'ran123',
+    email: 'test1',
+    password: 'p'},
+  dom345: {
+    id: 'dom456',
+    email: 'test1',
+    password: 'p'}
+};
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 app.get('/login', (request, response) => {
-  let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   response.render('login',templateVars);
 });
@@ -60,19 +67,19 @@ app.post('/register', (request, response) => {
 
 
 app.get('/register', (request, response) => {
-  let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   response.render('register', templateVars);
 });
 
 app.get('/urls/new', (request, response) => {
-  let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   response.render('urls_new',templateVars);
 });
 
 app.post('/urls', (request, response) => {
-let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
 let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   if (!email) {
     response.redirect('/login');
@@ -95,7 +102,7 @@ let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
 });
 
 app.post('/urls/:id/delete', (request, response) => {
-  let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   if (!email) {
     response.redirect('/login');
@@ -106,7 +113,7 @@ app.post('/urls/:id/delete', (request, response) => {
 });
 
 app.post('/urls/:id/update', (request, response) => {
-  let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase};
   if (!email) {
     response.redirect('/login');
@@ -122,7 +129,7 @@ app.get('/u/:shortURL', (request, response) => {
 });
 
 app.get('/urls/:id', (request, response) => {
-  let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: urlDatabase, shortURL: request.params.id};
   templateVars.longURL = urlDatabase[request.params.id].longURL || 'Not in database';
   response.render('urls_show', templateVars);
@@ -140,7 +147,7 @@ function filter(database,request) {
 
 app.get('/urls', (request, response) => {
   let url = filter(urlDatabase, request);
-  let email = (request.cookies['user_id']) ? users[request.cookies['user_id']].email : '';
+  let email = (users[request.cookies['user_id']]) ? users[request.cookies['user_id']].email : '';
   let templateVars = {id: request.cookies['id'], email: email, urls: url};
   response.render('urls_index', templateVars);
 });
