@@ -19,6 +19,10 @@ app.use(cookieSession({
 app.get('/login', (request, response) => {
   let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
   let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
+  if (email) {
+    response.redirect('/');
+    return;
+  };
   response.render('login',templateVars);
 });
 
@@ -46,12 +50,12 @@ app.post('/logout', (request, response) => {
 app.post('/register', (request, response) => {
   for (let i in users) {
     if (users[i].email === request.body['email']) {
-      response.status(400).send('Error: 400 \nEmail already exists');
+      response.status(400).send('Email is already registered');
       return;
     }
   }
   if (!request.body['email'] || !request.body['password']) {
-    response.status(400).send('Error: 400 \nPlease confirm you entered both fields properly');
+    response.status(400).send('Please confirm you completed both fields properly');
     return;
   }
   const password = request.body['password']; // you will probably this from req.params
@@ -66,6 +70,10 @@ app.post('/register', (request, response) => {
 app.get('/register', (request, response) => {
   let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
   let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
+  if (email) {
+    response.redirect('/');
+    return;
+  };
   response.render('register', templateVars);
 });
 
