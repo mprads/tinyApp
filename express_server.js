@@ -48,12 +48,12 @@ app.post('/login', (request, response) => {
         response.redirect('/');
         return;
       } else {
-        response.status(403).send('Incorrect Email or Password');
+        response.status(401).send('Incorrect Email or Password');
         return;
       }
     }
   }
-  response.status(403).send('Incorrect Email or Password');
+  response.status(401).send('Incorrect Email or Password');
 });
 
 app.post('/logout', (request, response) => {
