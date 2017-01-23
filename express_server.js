@@ -95,7 +95,7 @@ app.get('/urls/new', (request, response) => {
   let email = (users[request.session['user_id']]) ? users[request.session['user_id']].email : '';
   let templateVars = {id: request.session['id'], email: email, urls: urlDatabase};
   if (!email) {
-    response.redirect('/login');
+    response.status(401).send(`Please <a href =/login>login</a> to see your links`);
     return;
   }
   response.render('urls_new', templateVars);
@@ -172,7 +172,6 @@ app.get('/urls/:id', (request, response) => {
     return;
   }
   templateVars.longURL = urlDatabase[request.params.id].longURL;
-  response.status(200);
   response.render('urls_show', templateVars);
 });
 
@@ -184,7 +183,6 @@ app.get('/urls', (request, response) => {
     response.status(401).send(`Please <a href =/login>login</a> to see your links`);
     return;
   }
-  response.status(200);
   response.render('urls_index', templateVars);
 });
 
@@ -196,10 +194,6 @@ app.get('/', (request, response) => {
     return;
   }
   response.redirect('/urls');
-});
-
-app.get('/users.json', (request, response) => {
-  response.json(users);
 });
 
 app.listen(PORT, () => {
