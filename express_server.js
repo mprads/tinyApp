@@ -148,7 +148,7 @@ app.post('/urls/:id/update', (request, response) => {
 });
 
 app.get('/u/:shortURL', (request, response) => {
-  if (!urlDatabase[request.params.longURL]){
+  if (!urlDatabase[request.params.shortURL]){
     response.status(404).send('This link does not exist in our database');
     return;
   }
